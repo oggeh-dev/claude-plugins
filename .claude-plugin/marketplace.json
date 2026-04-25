@@ -1,0 +1,38 @@
+{
+  "name": "oggeh",
+  "owner": {
+    "name": "OGGEH, Inc"
+  },
+  "metadata": {
+    "description": "OGGEH's Claude Code plugins.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "cost-guard",
+      "source": "./plugins/cost-guard",
+      "description": "Real-time USD cost enforcement for Claude Code. Halts runaway agentic loops mid-step before they burn through your budget.",
+      "version": "0.1.0",
+      "author": {
+        "name": "OGGEH, Inc"
+      },
+      "license": "MIT",
+      "homepage": "https://github.com/oggeh-dev/claude-cost-guard",
+      "repository": "https://github.com/oggeh-dev/claude-cost-guard",
+      "keywords": [
+        "cost",
+        "budget",
+        "rate-limit",
+        "observability",
+        "safety"
+      ],
+      "category": "observability",
+      "tags": [
+        "cost-control",
+        "rate-limit",
+        "safety",
+        "budget"
+      ]
+    }
+  ]
+}
