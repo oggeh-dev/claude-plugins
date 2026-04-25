@@ -1,4 +1,4 @@
-# oggeh — Claude Code plugin marketplace
+# OGGEH — Claude Code plugin marketplace
 
 This repository is a **Claude Code plugin marketplace** maintained by [OGGEH, Inc](https://oggeh.com). Marketplace name: `oggeh`.
 
