@@ -1,213 +1,109 @@
-# Release process
+# Catalog release process
 
-How to ship a new release of any plugin in this marketplace. Today this only covers `cost-guard`, but the same flow applies if more plugins land here later.
+This repo IS the `oggeh` marketplace catalog — it lists plugins by reference, but it does not host any plugin code. Each plugin lives in its own repository (e.g. `cost-guard` lives at [`oggeh-dev/claude-cost-guard`](https://github.com/oggeh-dev/claude-cost-guard)) and follows its own release flow.
 
-This repo is **two manifests sharing one git history**:
+This catalog only needs an update when one of the following happens:
 
-- `plugins/cost-guard/.claude-plugin/plugin.json` — the plugin's own version. Claude Code uses this field to decide whether a user has the latest.
-- `.claude-plugin/marketplace.json` — the catalog. Each `plugins[]` entry mirrors the plugin's version; the catalog itself has its own optional `metadata.version`.
+1. **A listed plugin ships a new version** — bump that plugin's `version` field in `marketplace.json` to match the plugin repo's new `plugin.json` version.
+2. **A new plugin is added to the catalog** — add a new entry to the `plugins[]` array.
+3. **An existing plugin is removed from the catalog** — remove its entry from `plugins[]`.
+4. **A plugin's source URL or other catalog metadata changes** — edit the relevant entry.
 
-The `claude plugin tag` command refuses to create a release tag unless the plugin manifest and the matching marketplace entry agree on the version, which means **you cannot accidentally ship one without the other**.
-
----
-
-## Versioning policy
-
-We follow [semantic versioning](https://semver.org/) — `MAJOR.MINOR.PATCH`.
-
-| Bump | When | Examples for cost-guard |
-|---|---|---|
-| **PATCH** (`0.1.0 → 0.1.1`) | Bug fix, doc update, pricing-table refresh — anything that doesn't change behavior users rely on. | Halt-banner typo. JSONL parser bug. Anthropic pricing changed. README clarification. New default already shipped via env-var override. |
-| **MINOR** (`0.1.0 → 0.2.0`) | Backwards-compatible feature: anything that adds capability without changing or removing existing behavior. | New `/cost-guard:*` skill. New `userConfig` field (with a default that preserves prior behavior). New halt event registered. New indicator metric. |
-| **MAJOR** (`0.1.0 → 1.0.0`) | Breaking change: anything that requires users to update their config, mental model, or expectations. | Renaming a `userConfig` key. Removing or renaming a skill. Changing the meaning of an existing field. Moving `${CLAUDE_PLUGIN_DATA}` files. Switching halt semantics. |
-
-**Pre-1.0 exception:** while the leading version is `0.x.y`, breaking changes are allowed to bump `MINOR` (`0.1.0 → 0.2.0`) instead of `MAJOR`. The leading `0` signals the API is still stabilizing. Once we ship `1.0.0`, strict semver applies and breaking changes go to `MAJOR`.
+The catalog is **not tagged per plugin release**. Tags belong with the plugins, not the catalog. The catalog's own `metadata.version` field tracks structural changes to the catalog itself (a plugin was added/removed, source types changed) — bump it when those things happen, leave it alone otherwise.
 
 ---
 
-## Three files to update on every release
+## When a listed plugin ships a new version (most common)
 
-### 1. `plugins/cost-guard/.claude-plugin/plugin.json`
-
-Bump the `version` field:
-
-```json
-{
-  "name": "cost-guard",
-  "version": "0.2.0",   // <- bump this
-  ...
-}
-```
-
-This is the field Claude Code uses to detect "has the user got the latest?". If you don't bump it, users running `/plugin update cost-guard@oggeh` will see "already at the latest version" and miss your release. **Skipping this bump is the most common release mistake.**
-
-### 2. `.claude-plugin/marketplace.json`
-
-Two version fields live here:
-
-```json
-{
-  "metadata": {
-    "version": "0.1.0"          // catalog version — usually unchanged per release
-  },
-  "plugins": [
-    {
-      "name": "cost-guard",
-      "version": "0.2.0",       // <- bump this to match plugin.json
-      ...
-    }
-  ]
-}
-```
-
-- **`plugins[0].version`** — must match `plugin.json`'s version exactly. The `claude plugin tag` command verifies this.
-- **`metadata.version`** — the marketplace catalog's version. Bump only when *the catalog itself* changes (a plugin was added or removed, `source` paths changed, owner info changed). A new release of an existing plugin does *not* require bumping `metadata.version`.
-
-### 3. `plugins/cost-guard/CHANGELOG.md`
-
-Add a new section at the top, above the previous release entry:
-
-```markdown
-## [0.2.0] — 2026-MM-DD
-
-### Added
-- New skill `/cost-guard:foo` …
-
-### Changed
-- Default `rate_per_min_usd` raised from 0.50 to 0.75 …
-
-### Fixed
-- Halt banner displayed `step` cost as `$NaN` when …
-
-### Removed
-- Deprecated `/cost-guard:set-bar` skill (was renamed in 0.1.5) …
-```
-
-Use `### Added`, `### Changed`, `### Fixed`, `### Deprecated`, `### Removed`, and `### Security` headings as needed (these are the [Keep a Changelog](https://keepachangelog.com/) conventions). The CHANGELOG is what reviewers and users read first — make it complete and human-readable.
-
----
-
-## Step-by-step release procedure
-
-Assuming you're starting from a clean `main` branch with the work to be released already merged:
+Triggered by: a plugin's repo (e.g. `oggeh-dev/claude-cost-guard`) just released `cost-guard--vX.Y.Z`.
 
 ```bash
-# 1. (Optional) Branch for the release commit. You can also do this on main.
-git checkout -b release/v0.2.0
+# 1. Edit .claude-plugin/marketplace.json — bump plugins[N].version to match.
+#    For cost-guard, find: { "name": "cost-guard", "version": "..." }
+#    and update version to the new value.
 
-# 2. Edit the three files: plugin.json, marketplace.json, CHANGELOG.md.
+# 2. Validate.
+claude plugin validate .
 
-# 3. Sanity-check that both manifests still validate.
-claude plugin validate .                           # marketplace
-claude plugin validate plugins/cost-guard          # plugin
-
-# 4. Confirm the versions match (the tag command will fail otherwise).
-jq -r '.version' plugins/cost-guard/.claude-plugin/plugin.json
-jq -r '.plugins[0].version' .claude-plugin/marketplace.json
-# These two must print the same string.
-
-# 5. Commit. A single release commit is fine.
-git add plugins/cost-guard/.claude-plugin/plugin.json \
-        plugins/cost-guard/CHANGELOG.md \
-        .claude-plugin/marketplace.json
-git commit -m "release: cost-guard v0.2.0"
-
-# 6. Merge to main (skip if step 1 was on main directly).
-git checkout main
-git merge --ff-only release/v0.2.0
-git branch -d release/v0.2.0
-
-# 7. Dry-run the tag. This validates plugin.json + marketplace.json agree
-#    and prints the tag name without creating it.
-claude plugin tag plugins/cost-guard --dry-run
-
-# Expected output:
-#   Would create tag: cost-guard--v0.2.0
-
-# 8. Create the tag and push it (one step). Annotated tags carry a message.
-claude plugin tag plugins/cost-guard --push -m "cost-guard v0.2.0"
-
-# 9. Push the release commit.
+# 3. Commit + push.
+git add .claude-plugin/marketplace.json
+git commit -m "chore(catalog): cost-guard X.Y.Z"
 git push origin main
 ```
 
-**Tag format** — the command always produces `{plugin-name}--v{version}` (e.g., `cost-guard--v0.2.0`). The double dash is intentional and reserved for plugin tags by Claude Code.
+That's it. No catalog-side tag. Users on auto-update will pick up the new plugin version on next session start; users on manual update can run `/plugin update cost-guard@oggeh`.
 
 ---
 
-## How users receive the update
+## When adding a new plugin
 
-After your push:
+```bash
+# 1. Edit .claude-plugin/marketplace.json — append to plugins[]:
+#    {
+#      "name": "<plugin-name>",
+#      "source": { "source": "github", "repo": "oggeh-dev/<plugin-repo>" },
+#      "description": "...",
+#      "version": "<plugin-version>",
+#      "author": { "name": "OGGEH, Inc" },
+#      "license": "MIT",
+#      ...
+#    }
 
+# 2. Bump metadata.version (catalog has more plugins than before).
+
+# 3. Update README.md — add a row to the "Plugins in this marketplace" table.
+
+# 4. Validate.
+claude plugin validate .
+
+# 5. Commit + push.
+git add .claude-plugin/marketplace.json README.md
+git commit -m "feat(catalog): list <plugin-name>"
+git push origin main
 ```
-/plugin marketplace update oggeh
-/plugin update cost-guard@oggeh
-```
-
-If a user has auto-update enabled for the `oggeh` marketplace (`/plugin` → Marketplaces tab, toggle on the marketplace row), Claude Code pulls the new commit on next start and prompts them to run `/reload-plugins`.
-
-**Auto-update default for third-party marketplaces is OFF** — Anthropic's official marketplace ships it ON. Users who add `oggeh-dev/claude-plugins` get a manual-update marketplace by default; they can flip the toggle if they want auto-updates.
 
 ---
 
-## Special-case releases
+## When removing a plugin
 
-### Pricing-table refresh
-
-When Anthropic publishes new model prices, edit `plugins/cost-guard/pricing.json` and bump the patch version (e.g., `0.2.0 → 0.2.1`). The `_metadata.last_verified` field inside `pricing.json` should be updated to today's date so users / reviewers can see when the table was last checked.
-
-CHANGELOG entry under `### Changed`:
-```markdown
-- Pricing table refreshed against Anthropic's published rates as of YYYY-MM-DD.
+```bash
+# 1. Remove its entry from plugins[] in marketplace.json.
+# 2. Bump metadata.version.
+# 3. Update README.md — remove its row.
+# 4. Validate.
+# 5. Commit:
+git commit -am "chore(catalog): remove <plugin-name>"
+# 6. Push.
+git push origin main
 ```
 
-### Hot fix on a published release
+Users with the plugin already installed keep working until they uninstall manually — Claude Code does not auto-uninstall when a marketplace de-lists a plugin.
 
-If a release is broken in production (a halt is firing wrongly, the indicator crashes, etc.):
+---
 
-1. Branch from the broken release's tag: `git checkout -b hotfix/v0.2.1 cost-guard--v0.2.0`.
-2. Fix the bug. Add a CHANGELOG entry under `### Fixed`.
-3. Bump patch in plugin.json + marketplace.json.
-4. Run the standard release procedure (steps 3–9 above).
+## Catalog `metadata.version` policy
 
-### Adding a new plugin to the marketplace
-
-When a *second* plugin lands in this repo (e.g., `oggeh-data-tracker`):
-
-1. Add `plugins/<new-plugin>/` with its own `.claude-plugin/plugin.json`, `bin/`, etc.
-2. Add the new entry to `marketplace.json`'s `plugins` array.
-3. **Bump `metadata.version`** in marketplace.json — this is the case it exists for.
-4. CHANGELOG entry at the marketplace level (a `RELEASE_NOTES.md` could be added later if there's enough catalog churn to need one).
-5. Tag *each plugin* whose version moved using `claude plugin tag plugins/<name>`.
+| Bump | When |
+|---|---|
+| MAJOR | The catalog name changes, or a structural breaking change to the schema. |
+| MINOR | A plugin is added or removed; a plugin's `source` type changes; the catalog's identity (`name`, `owner`) changes. |
+| PATCH | Description tweak, keyword adjustment, README polish. Per-plugin `version` bumps **do not** require a catalog `metadata.version` bump. |
 
 ---
 
 ## Pre-flight checklist
 
-Before tagging:
-
 - [ ] `claude plugin validate .` passes.
-- [ ] `claude plugin validate plugins/cost-guard` passes.
-- [ ] `plugin.json.version` and `marketplace.json.plugins[0].version` are identical.
-- [ ] CHANGELOG has a dated section for the new version with all user-visible changes documented.
-- [ ] If pricing.json changed, `_metadata.last_verified` is today.
-- [ ] All hook commands still resolve (`grep CLAUDE_PLUGIN_ROOT plugins/cost-guard/hooks/hooks.json`).
-- [ ] `git status` is clean — no stray local files.
-- [ ] `claude plugin tag plugins/cost-guard --dry-run` prints the expected tag name.
-
-After pushing:
-
-- [ ] The commit appears on GitHub at `oggeh-dev/claude-plugins`.
-- [ ] The tag `cost-guard--v<NEW>` appears in the GitHub releases / tags view.
-- [ ] In a fresh Claude Code session: `/plugin marketplace update oggeh` then `/plugin update cost-guard@oggeh` pulls the new version.
-- [ ] `/cost-guard:status` shows `enabled: true` and the new behavior is in effect.
+- [ ] All `plugins[N].version` fields match the corresponding plugin repos' latest plugin.json versions.
+- [ ] All `plugins[N].source` entries point at repos that exist and contain a valid `plugin.json` at root.
+- [ ] README.md plugin table reflects the current catalog (no stale entries, no missing ones).
+- [ ] `git status` is clean.
 
 ---
 
 ## Reference
 
-- Claude Code plugin docs: <https://code.claude.com/docs/en/plugins>
-- Marketplace docs: <https://code.claude.com/docs/en/plugin-marketplaces>
-- `claude plugin tag --help`: validates plugin/marketplace agreement and creates `{name}--v{version}` tags.
-- Keep a Changelog: <https://keepachangelog.com/en/1.1.0/>
-- Semantic Versioning: <https://semver.org/spec/v2.0.0.html>
+- [Claude Code plugin docs](https://code.claude.com/docs/en/plugins)
+- [Marketplace docs](https://code.claude.com/docs/en/plugin-marketplaces)
+- [Semantic Versioning](https://semver.org/spec/v2.0.0.html) (for the catalog's own `metadata.version`)
+- Per-plugin release flow: see each plugin repo's own `RELEASE.md` (e.g. [`oggeh-dev/claude-cost-guard/RELEASE.md`](https://github.com/oggeh-dev/claude-cost-guard/blob/main/RELEASE.md)).

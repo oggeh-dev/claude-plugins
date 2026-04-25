@@ -17,37 +17,31 @@ The first line tells your Claude Code installation about this marketplace (resol
 
 ## Plugins in this marketplace
 
-| Plugin | Install command | What it does |
-|---|---|---|
-| [`cost-guard`](./plugins/cost-guard/) | `/plugin install cost-guard@oggeh` | Real-time USD cost enforcement for Claude Code. Halts runaway agentic loops mid-step before they burn through your budget. |
+Each plugin lives in its own dedicated repository. This catalog points at them via `github` sources, so `/plugin install <name>@oggeh` automatically clones the right repo.
+
+| Plugin | Repository | Install command | What it does |
+|---|---|---|---|
+| `cost-guard` | [`oggeh-dev/claude-cost-guard`](https://github.com/oggeh-dev/claude-cost-guard) | `/plugin install cost-guard@oggeh` | Real-time USD cost enforcement for Claude Code. Halts runaway agentic loops mid-step before they burn through your budget. |
 
 ## Repository layout
+
+This repo holds *only* the marketplace catalog and its metadata. Plugin source code lives in the plugins' own repos (linked above).
 
 ```
 .
 ├── .claude-plugin/
-│   └── marketplace.json    # marketplace catalog
-├── plugins/
-│   └── cost-guard/         # the cost-guard plugin (its own .claude-plugin/plugin.json)
-│       ├── README.md       # plugin documentation
-│       ├── TESTING.md      # local-test procedures
-│       ├── CHANGELOG.md
-│       ├── bin/, hooks/, skills/, pricing.json
-│       └── .claude-plugin/plugin.json
-├── LICENSE                 # MIT, applies to the whole repo
-├── RELEASE.md              # release procedure for maintainers
+│   └── marketplace.json    # marketplace catalog (lists every plugin)
+├── LICENSE                 # MIT, applies to the catalog metadata
+├── RELEASE.md              # release procedure for the catalog itself
 └── README.md               # this file
 ```
 
-For plugin-specific docs (configuration, halt mechanics, indicator setup, etc.) see [`plugins/cost-guard/README.md`](./plugins/cost-guard/README.md).
+For plugin-specific docs (configuration, halt mechanics, etc.) see each plugin's own README — e.g. [`oggeh-dev/claude-cost-guard`](https://github.com/oggeh-dev/claude-cost-guard).
 
-## Releasing a new version
+## Releasing catalog updates
 
-Maintainers: see [`RELEASE.md`](./RELEASE.md) for the step-by-step release procedure (versioning policy, manifest bumps, tagging, and the pre-flight checklist).
+Maintainers: see [`RELEASE.md`](./RELEASE.md) for the procedure when a listed plugin ships a new version, when a new plugin is added, or when an existing plugin is removed.
 
 ## License
 
 MIT — see [LICENSE](./LICENSE).
-
- Copyright (c) 2026 OGGEH, Inc.
- 
