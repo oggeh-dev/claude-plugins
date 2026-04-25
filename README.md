@@ -1,6 +1,6 @@
 # oggeh — Claude Code plugin marketplace
 
-This repository is a **Claude Code plugin marketplace** maintained by [OGGEH, Inc](https://github.com/oggeh-dev). Marketplace name: `oggeh`.
+This repository is a **Claude Code plugin marketplace** maintained by [OGGEH, Inc](https://oggeh.com). Marketplace name: `oggeh`.
 
 A "marketplace" in Claude Code is just a catalog of plugins hosted on GitHub. Anyone can register this marketplace into their own Claude Code installation and install any plugin we ship from it.
 
