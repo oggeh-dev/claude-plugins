@@ -48,3 +48,6 @@ Maintainers: see [`RELEASE.md`](./RELEASE.md) for the step-by-step release proce
 ## License
 
 MIT — see [LICENSE](./LICENSE).
+
+ Copyright (c) 2026 OGGEH, Inc.
+ 
