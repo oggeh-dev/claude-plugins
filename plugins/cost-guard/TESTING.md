@@ -5,7 +5,7 @@ Walk through every halt path end-to-end to verify the plugin works.
 ## Prerequisites
 
 ```bash
-claude --plugin-dir /path/to/claude-cost-guard/plugins/cost-guard
+claude --plugin-dir /path/to/claude-plugins/plugins/cost-guard
 ```
 
 `--plugin-dir` points at the plugin subdirectory, not the marketplace repo root. Halts activate on `SessionStart`. Nothing else is required — hooks run regardless of whether the bottom-row indicator is installed.

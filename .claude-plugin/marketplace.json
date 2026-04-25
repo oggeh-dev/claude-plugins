@@ -17,8 +17,8 @@
         "name": "OGGEH, Inc"
       },
       "license": "MIT",
-      "homepage": "https://github.com/oggeh-dev/claude-cost-guard",
-      "repository": "https://github.com/oggeh-dev/claude-cost-guard",
+      "homepage": "https://github.com/oggeh-dev/claude-plugins",
+      "repository": "https://github.com/oggeh-dev/claude-plugins",
       "keywords": [
         "cost",
         "budget",

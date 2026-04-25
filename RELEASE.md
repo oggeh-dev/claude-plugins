@@ -146,7 +146,7 @@ After your push:
 
 If a user has auto-update enabled for the `oggeh` marketplace (`/plugin` → Marketplaces tab, toggle on the marketplace row), Claude Code pulls the new commit on next start and prompts them to run `/reload-plugins`.
 
-**Auto-update default for third-party marketplaces is OFF** — Anthropic's official marketplace ships it ON. Users who add `oggeh-dev/claude-cost-guard` get a manual-update marketplace by default; they can flip the toggle if they want auto-updates.
+**Auto-update default for third-party marketplaces is OFF** — Anthropic's official marketplace ships it ON. Users who add `oggeh-dev/claude-plugins` get a manual-update marketplace by default; they can flip the toggle if they want auto-updates.
 
 ---
 
@@ -197,7 +197,7 @@ Before tagging:
 
 After pushing:
 
-- [ ] The commit appears on GitHub at `oggeh-dev/claude-cost-guard`.
+- [ ] The commit appears on GitHub at `oggeh-dev/claude-plugins`.
 - [ ] The tag `cost-guard--v<NEW>` appears in the GitHub releases / tags view.
 - [ ] In a fresh Claude Code session: `/plugin marketplace update oggeh` then `/plugin update cost-guard@oggeh` pulls the new version.
 - [ ] `/cost-guard:status` shows `enabled: true` and the new behavior is in effect.

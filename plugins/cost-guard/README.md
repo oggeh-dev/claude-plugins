@@ -61,7 +61,7 @@ Session cost comes from the JSONL transcript (`transcript_path` is provided to e
 ### From the OGGEH marketplace
 
 ```
-/plugin marketplace add oggeh-dev/claude-cost-guard
+/plugin marketplace add oggeh-dev/claude-plugins
 /plugin install cost-guard@oggeh
 ```
 
@@ -72,8 +72,8 @@ The first command registers the marketplace catalog under the local name `oggeh`
 The plugin source lives in a subdirectory of the marketplace repo:
 
 ```bash
-git clone git@github.com:oggeh-dev/claude-cost-guard.git
-claude --plugin-dir claude-cost-guard/plugins/cost-guard
+git clone git@github.com:oggeh-dev/claude-plugins.git
+claude --plugin-dir claude-plugins/plugins/cost-guard
 ```
 
 `--plugin-dir` points at the plugin directory (`plugins/cost-guard/`), not at the marketplace root.
