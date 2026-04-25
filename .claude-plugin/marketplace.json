@@ -15,7 +15,6 @@
         "repo": "oggeh-dev/claude-cost-guard"
       },
       "description": "Real-time USD cost enforcement for Claude Code. Halts runaway agentic loops mid-step before they burn through your budget.",
-      "version": "0.1.1",
       "author": {
         "name": "OGGEH, Inc"
       },
