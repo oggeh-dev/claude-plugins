@@ -21,6 +21,7 @@ Each plugin lives in its own dedicated repository. This catalog points at them v
 
 | Plugin | Repository | Install command | What it does |
 |---|---|---|---|
+| `oggeh` | [`oggeh-dev/oggeh-brain`](https://github.com/oggeh-dev/oggeh-brain) *(private)* | `/plugin install oggeh@oggeh` | OGGEH platform brain — on-demand institutional knowledge of the OGGEH platform (architecture, services, multi-tenant database schema, conventions) delivered as the `/oggeh:brain` skill. Requires repo access. |
 | `cost-guard` | [`oggeh-dev/claude-cost-guard`](https://github.com/oggeh-dev/claude-cost-guard) | `/plugin install cost-guard@oggeh` | Real-time USD cost enforcement for Claude Code. Halts runaway agentic loops mid-step before they burn through your budget. |
 
 ## Repository layout

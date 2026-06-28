@@ -5,9 +5,37 @@
   },
   "metadata": {
     "description": "OGGEH's Claude Code plugins.",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "plugins": [
+    {
+      "name": "oggeh",
+      "source": {
+        "source": "github",
+        "repo": "oggeh-dev/oggeh-brain"
+      },
+      "description": "OGGEH platform brain — self-contained institutional knowledge of the OGGEH platform (architecture, services, multi-tenant database schema, conventions, dev stack) bundled inside the /oggeh:brain skill. Private; requires repo access.",
+      "version": "0.1.0",
+      "author": {
+        "name": "OGGEH, Inc"
+      },
+      "homepage": "https://github.com/oggeh-dev/oggeh-brain",
+      "repository": "https://github.com/oggeh-dev/oggeh-brain",
+      "keywords": [
+        "oggeh",
+        "platform",
+        "knowledge",
+        "architecture",
+        "internal"
+      ],
+      "category": "knowledge",
+      "tags": [
+        "oggeh",
+        "platform",
+        "knowledge",
+        "internal"
+      ]
+    },
     {
       "name": "cost-guard",
       "source": {
