@@ -14,7 +14,7 @@
         "source": "github",
         "repo": "oggeh-dev/oggeh-brain"
       },
-      "description": "OGGEH platform brain — self-contained institutional knowledge of the OGGEH platform (architecture, services, multi-tenant database schema, conventions, dev stack) bundled inside the /oggeh:brain skill. Private; requires repo access.",
+      "description": "OGGEH platform brain \u2014 self-contained institutional knowledge of the OGGEH platform (architecture, services, multi-tenant database schema, conventions, dev stack) bundled inside the /oggeh:brain skill. Private; requires repo access.",
       "version": "0.1.0",
       "author": {
         "name": "OGGEH, Inc"
@@ -43,6 +43,7 @@
         "repo": "oggeh-dev/claude-cost-guard"
       },
       "description": "Real-time USD cost enforcement for Claude Code. Halts runaway agentic loops mid-step before they burn through your budget.",
+      "version": "0.2.0",
       "author": {
         "name": "OGGEH, Inc"
       },
